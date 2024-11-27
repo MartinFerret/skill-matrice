@@ -1,5 +1,6 @@
 package com.example.back.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -37,6 +38,7 @@ public class Employee {
             joinColumns = @JoinColumn(name = "employee_id", nullable = true),
             inverseJoinColumns = @JoinColumn(name = "skill_id", nullable = true)
     )
+    @JsonManagedReference
     private Set<Skill> employeeSkills;
 
     @ManyToMany
@@ -45,6 +47,7 @@ public class Employee {
             joinColumns = @JoinColumn(name = "employee_id", nullable = true),
             inverseJoinColumns = @JoinColumn(name = "role_id", nullable = true)
     )
+    @JsonManagedReference
     private Set<Role> roles;
 
 }

@@ -1,5 +1,7 @@
 package com.example.back.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,8 +35,10 @@ public class Skill {
     private SkillLevel skillLevel;
 
     @ManyToMany(mappedBy = "employeeSkills")
+    @JsonBackReference
     private Set<Employee> employees;
 
     @ManyToMany(mappedBy = "roleSkills")
+    @JsonIgnore
     private Set<Role> roles;
 }
