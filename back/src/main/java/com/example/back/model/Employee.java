@@ -34,16 +34,16 @@ public class Employee {
     @ManyToMany
     @JoinTable(
             name = "employee_skill_proficiency",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id")
+            joinColumns = @JoinColumn(name = "employee_id", nullable = true),
+            inverseJoinColumns = @JoinColumn(name = "skill_id", nullable = true)
     )
     private Set<Skill> employeeSkills;
 
     @ManyToMany
     @JoinTable(
             name = "employee_role_proficiency",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            joinColumns = @JoinColumn(name = "employee_id", nullable = true),
+            inverseJoinColumns = @JoinColumn(name = "role_id", nullable = true)
     )
     private Set<Role> roles;
 
