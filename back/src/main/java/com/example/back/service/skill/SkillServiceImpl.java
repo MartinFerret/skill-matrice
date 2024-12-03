@@ -7,54 +7,56 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SkillServiceImpl implements SkillService {
-    private final SkillRepository skillRepository;
+
     private final ModelMapper modelMapper;
+    private final SkillRepository skillRepository;
 
-    public SkillServiceImpl(SkillRepository skillRepository, ModelMapper modelMapper) {
-        this.skillRepository = skillRepository;
+    public SkillServiceImpl(ModelMapper modelMapper, SkillRepository skillRepository) {
         this.modelMapper = modelMapper;
-    }
-
-    @Override
-    public List<Skill> getAllSkills() {
-        return skillRepository.findAll();
+        this.skillRepository = skillRepository;
     }
 
     @Override
     public SkillDTO createSkill(SkillDTO skillDTO) {
         Skill skill = modelMapper.map(skillDTO, Skill.class);
+
         Skill savedSkill = skillRepository.save(skill);
+
         return modelMapper.map(savedSkill, SkillDTO.class);
     }
 
     @Override
-    public Skill getSkillById(Long id) {
-        return skillRepository.findById(id).orElse(null);
+    public List<SkillDTO> getAllSkills() {
+        return skillRepository.findAll().stream()
+                .map(skill -> modelMapper.map(skill, SkillDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public SkillDTO updateSkill(Long id, SkillDTO skillDTO) {
-        Skill skillStored = skillRepository.findById(id).orElse(null);
-        if (skillStored == null) {
-            throw new RuntimeException("Skill not found");
-        }
-
-        skillStored.setName(skillDTO.getName());
-        skillStored.setSkillLevel(skillDTO.getSkillLevel());
-        skillRepository.save(skillStored);
-
-        return modelMapper.map(skillStored, SkillDTO.class);
+    public SkillDTO getSkillById(Long id) {
+        Skill skill = skillRepository.findById(id).orElseThrow(() -> new RuntimeException("Skill not found"));
+        return modelMapper.map(skill, SkillDTO.class);
     }
 
     @Override
-    public void deleteSkill(Long id) {
-        Skill skill = skillRepository.findById(id).orElse(null);
-        if (skill == null) {
-            throw new RuntimeException("Skill not found");
-        }
+    public void deleteSkillById(Long id) {
+        Skill skill = skillRepository.findById(id).orElseThrow(() -> new RuntimeException("Skill not found"));
         skillRepository.delete(skill);
+    }
+
+    @Override
+    public SkillDTO updateSkillById(Long id, SkillDTO skillDTO) {
+        Skill existingSkill = skillRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Skill not found"));
+
+        existingSkill.setName(skillDTO.getName());
+
+        Skill updatedSkill = skillRepository.save(existingSkill);
+
+        return modelMapper.map(updatedSkill, SkillDTO.class);
     }
 }
