@@ -1,5 +1,6 @@
 package com.example.back.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -7,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "roles")
@@ -25,14 +26,7 @@ public class Role {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany
-    @JoinTable(
-            name = "proficiencies_for_role",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id")
-    )
-    private Set<Skill> roleSkills;
-
-    @ManyToMany(mappedBy = "roles")
-    private Set<Employee> employees;
+    @OneToMany(mappedBy = "role")
+    @JsonManagedReference
+    private List<Proficiency> proficiencies;
 }
