@@ -13,5 +13,13 @@ public class EmployeeDTO {
     private Long id;
     private String firstname;
     private String lastname;
-    private List<ProficiencyDTO> proficiencies;
+    private String role;
+    private List<ProficiencyEmployeeDTO> proficiencies;
+
+    public EmployeeDTO(Long id, String firstname, String lastname, List<ProficiencyEmployeeDTO> proficiencies) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.proficiencies = proficiencies;
+    }
 }
