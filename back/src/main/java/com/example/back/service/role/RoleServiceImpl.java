@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -33,48 +34,57 @@ public class RoleServiceImpl implements RoleService {
     public List<RoleDTO> getAllRoles() {
         List<Role> roles = roleRepository.findAll();
 
-        // Transformer les rôles en RoleDTOs
         return roles.stream().map(role -> {
             RoleDTO roleDTO = modelMapper.map(role, RoleDTO.class);
 
-            // Transformer les proficiencies pour inclure seulement skillName et skillLevel
             List<ProficiencyDTO> proficiencies = role.getProficiencies().stream().map(proficiency -> {
                 ProficiencyDTO proficiencyDTO = new ProficiencyDTO();
                 proficiencyDTO.setId(proficiency.getId());
                 proficiencyDTO.setSkillLevel(proficiency.getSkillLevel());
-                proficiencyDTO.setSkillName(proficiency.getSkill().getName()); // Ajouter skillName
+                proficiencyDTO.setSkillName(proficiency.getSkill().getName());
                 return proficiencyDTO;
-            }).collect(java.util.stream.Collectors.toList()); // Utiliser Collectors.toList()
+            }).collect(java.util.stream.Collectors.toList());
 
             roleDTO.setProficiencies(proficiencies);
             return roleDTO;
-        }).collect(java.util.stream.Collectors.toList()); // Utiliser Collectors.toList()
+        }).collect(java.util.stream.Collectors.toList());
     }
 
 
     @Override
     public RoleDTO createRole(RoleDTO roleDTO) {
-        Role role = modelMapper.map(roleDTO, Role.class);
+        if (roleDTO.getName() == null || roleDTO.getName().isEmpty()) {
+            throw new RuntimeException("Le nom du rôle ne peut pas être vide");
+        }
 
+        Role role = new Role();
+        role.setName(roleDTO.getName());
         Role savedRole = roleRepository.save(role);
 
         List<Proficiency> proficiencies = new ArrayList<>();
-        for (Long skillId : roleDTO.getSkillIds()) {
+        List<Long> skillIds = roleDTO.getProficiencies().stream()
+                .map(proficiencyDTO -> proficiencyDTO.getSkillId())
+                .collect(Collectors.toList());
+        if (skillIds == null || skillIds.isEmpty()) {
+            throw new RuntimeException("Aucune compétence n'a été fournie pour ce rôle");
+        }
+
+        for (Long skillId : skillIds) {
             Skill skill = skillRepository.findById(skillId)
-                    .orElseThrow(() -> new RuntimeException("Skill not found for id: " + skillId));
+                    .orElseThrow(() -> new RuntimeException("Compétence non trouvée avec l'ID : " + skillId));
 
             Proficiency proficiency = new Proficiency();
-            proficiency.setRole(savedRole);
             proficiency.setSkill(skill);
+            proficiency.setRole(savedRole);
             proficiency.setSkillLevel(SkillLevel.BEGINNER);
-
+            proficiencyRepository.save(proficiency);
             proficiencies.add(proficiency);
         }
 
-        proficiencyRepository.saveAll(proficiencies);
+        List<ProficiencyDTO> proficiencyDTOs = proficiencies.stream()
+                .map(p -> new ProficiencyDTO(p.getId(), p.getSkill().getName(), p.getSkillLevel(), p.getSkill().getId()))
+                .collect(Collectors.toList());
 
-        savedRole.setProficiencies(proficiencies);
-
-        return modelMapper.map(savedRole, RoleDTO.class);
+        return new RoleDTO(savedRole.getId(), savedRole.getName(), proficiencyDTOs);
     }
 }

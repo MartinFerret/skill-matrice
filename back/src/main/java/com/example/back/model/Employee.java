@@ -1,5 +1,6 @@
 package com.example.back.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -31,7 +32,12 @@ public class Employee {
     @Column(name = "lastname")
     private String lastname;
 
+    @NotBlank
+    @Column(name = "role")
+    private String role;
+
     @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST)
+    @JsonManagedReference
     private List<Proficiency> proficiencies;
 
 }

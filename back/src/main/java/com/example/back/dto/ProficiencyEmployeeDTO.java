@@ -1,8 +1,6 @@
 package com.example.back.dto;
 
 import com.example.back.model.SkillLevel;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,11 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProficiencyDTO {
-    @JsonIgnore
-    private Long id;
-    private String skillName;
+public class ProficiencyEmployeeDTO {
     private SkillLevel skillLevel;
-    @JsonProperty("skillId")
     private Long skillId;
 }
