@@ -9,5 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SkillDTO {
     private Long id;
+    private Long parentSkillId;
     private String name;
+    private String parentName;
 }

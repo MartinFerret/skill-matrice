@@ -1,5 +1,6 @@
 package com.example.back.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +27,10 @@ public class Skill {
     @Size(max = 30)
     @Column(name = "name")
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_skill_id", referencedColumnName = "id", nullable = true)
+    private Skill parentSkill;
 
     @OneToMany(mappedBy = "skill")
     @JsonManagedReference

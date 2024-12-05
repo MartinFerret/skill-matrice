@@ -24,22 +24,61 @@ public class SkillServiceImpl implements SkillService {
     public SkillDTO createSkill(SkillDTO skillDTO) {
         Skill skill = modelMapper.map(skillDTO, Skill.class);
 
+        if (skillDTO.getParentSkillId() != null) {
+            Skill parentSkill = skillRepository.findById(skillDTO.getParentSkillId())
+                    .orElse(null);
+
+            if (parentSkill != null) {
+                skill.setParentSkill(parentSkill);
+
+                skillDTO.setParentName(parentSkill.getName());
+            } else {
+                skillDTO.setParentName("Parent Skill not found");
+            }
+        } else {
+            skillDTO.setParentName("No parent skill");
+        }
+
         Skill savedSkill = skillRepository.save(skill);
 
-        return modelMapper.map(savedSkill, SkillDTO.class);
+        SkillDTO skillDTOResult = modelMapper.map(savedSkill, SkillDTO.class);
+
+        skillDTOResult.setParentName(skillDTO.getParentName());
+
+        return skillDTOResult;
     }
 
     @Override
     public List<SkillDTO> getAllSkills() {
         return skillRepository.findAll().stream()
-                .map(skill -> modelMapper.map(skill, SkillDTO.class))
+                .map(skill -> {
+                    SkillDTO skillDTO = modelMapper.map(skill, SkillDTO.class);
+
+                    if (skill.getParentSkill() != null) {
+                        skillDTO.setParentName(skill.getParentSkill().getName());
+                    } else {
+                        skillDTO.setParentName(null);
+                    }
+
+                    return skillDTO;
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public SkillDTO getSkillById(Long id) {
-        Skill skill = skillRepository.findById(id).orElseThrow(() -> new RuntimeException("Skill not found"));
-        return modelMapper.map(skill, SkillDTO.class);
+        Skill skill = skillRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Skill not found"));
+
+        SkillDTO skillDTO = modelMapper.map(skill, SkillDTO.class);
+
+        if (skill.getParentSkill() != null) {
+            skillDTO.setParentName(skill.getParentSkill().getName());
+        } else {
+            skillDTO.setParentName(null);
+        }
+
+        return skillDTO;
     }
 
     @Override
@@ -55,8 +94,24 @@ public class SkillServiceImpl implements SkillService {
 
         existingSkill.setName(skillDTO.getName());
 
+        if (skillDTO.getParentSkillId() != null) {
+            Skill parentSkill = skillRepository.findById(skillDTO.getParentSkillId())
+                    .orElseThrow(() -> new RuntimeException("Parent Skill not found"));
+            existingSkill.setParentSkill(parentSkill);
+        } else {
+            existingSkill.setParentSkill(null);
+        }
+
         Skill updatedSkill = skillRepository.save(existingSkill);
 
-        return modelMapper.map(updatedSkill, SkillDTO.class);
+        SkillDTO updatedSkillDTO = modelMapper.map(updatedSkill, SkillDTO.class);
+
+        if (updatedSkill.getParentSkill() != null) {
+            updatedSkillDTO.setParentName(updatedSkill.getParentSkill().getName());
+        } else {
+            updatedSkillDTO.setParentName(null);
+        }
+
+        return updatedSkillDTO;
     }
 }
