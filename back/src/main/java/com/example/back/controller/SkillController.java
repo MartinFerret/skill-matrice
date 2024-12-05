@@ -20,8 +20,9 @@ public class SkillController {
     }
 
     @PostMapping
-    public ResponseEntity<SkillDTO> createSkill(@Valid @RequestBody SkillDTO skillDTO) {
-        return new ResponseEntity<>(skillService.createSkill(skillDTO), HttpStatus.CREATED);
+    public ResponseEntity<List<SkillDTO>> createSkill(@Valid @RequestBody SkillDTO skillDTO) {
+        skillService.createSkill(skillDTO);
+        return new ResponseEntity<>(skillService.getAllSkills(), HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -35,9 +36,9 @@ public class SkillController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSKillById(@PathVariable("id") Long id) {
+    public ResponseEntity<List<SkillDTO>> deleteSKillById(@PathVariable("id") Long id) {
         skillService.deleteSkillById(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(skillService.getAllSkills(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
