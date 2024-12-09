@@ -36,7 +36,7 @@ public class Employee {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Proficiency> proficiencies;
 

@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class ProficiencyEmployeeDTO {
     private SkillLevel skillLevel;
     private Long skillId;
+    private String skillName;
 }

@@ -8,6 +8,8 @@
   <properties>
     <java.version>21</java.version>
     <spring.boot.version>3.4.0</spring.boot.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <url>http://maven.apache.org</url>
   <dependencyManagement>

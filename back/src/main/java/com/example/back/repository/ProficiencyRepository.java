@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProficiencyRepository extends JpaRepository<Proficiency, Long> {
     void deleteByRoleId(Long roleId);
+    void deleteEmployeeById(Long employeeId);
 }
