@@ -42,6 +42,7 @@ public class RoleServiceImpl implements RoleService {
                 proficiencyDTO.setId(proficiency.getId());
                 proficiencyDTO.setSkillLevel(proficiency.getSkillLevel());
                 proficiencyDTO.setSkillName(proficiency.getSkill().getName());
+                proficiencyDTO.setSkillId(proficiency.getSkill().getId());
                 return proficiencyDTO;
             }).collect(java.util.stream.Collectors.toList());
 
@@ -63,9 +64,9 @@ public class RoleServiceImpl implements RoleService {
 
         List<Proficiency> proficiencies = new ArrayList<>();
         List<Long> skillIds = roleDTO.getProficiencies().stream()
-                .map(proficiencyDTO -> proficiencyDTO.getSkillId())
+                .map(ProficiencyDTO::getSkillId)
                 .collect(Collectors.toList());
-        if (skillIds == null || skillIds.isEmpty()) {
+        if (skillIds.isEmpty()) {
             throw new RuntimeException("Aucune compétence n'a été fournie pour ce rôle");
         }
 
