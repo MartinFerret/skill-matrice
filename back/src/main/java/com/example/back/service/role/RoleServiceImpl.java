@@ -9,6 +9,7 @@ import com.example.back.model.SkillLevel;
 import com.example.back.repository.ProficiencyRepository;
 import com.example.back.repository.RoleRepository;
 import com.example.back.repository.SkillRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -37,18 +38,30 @@ public class RoleServiceImpl implements RoleService {
         return roles.stream().map(role -> {
             RoleDTO roleDTO = modelMapper.map(role, RoleDTO.class);
 
-            List<ProficiencyDTO> proficiencies = role.getProficiencies().stream().map(proficiency -> {
-                ProficiencyDTO proficiencyDTO = new ProficiencyDTO();
-                proficiencyDTO.setId(proficiency.getId());
-                proficiencyDTO.setSkillLevel(proficiency.getSkillLevel());
-                proficiencyDTO.setSkillName(proficiency.getSkill().getName());
-                proficiencyDTO.setSkillId(proficiency.getSkill().getId());
-                return proficiencyDTO;
-            }).collect(java.util.stream.Collectors.toList());
+            List<ProficiencyDTO> proficiencies = (role.getProficiencies() != null) ?
+                    role.getProficiencies().stream().map(proficiency -> {
+                        ProficiencyDTO proficiencyDTO = new ProficiencyDTO();
+                        proficiencyDTO.setId(proficiency.getId());
+                        proficiencyDTO.setSkillLevel(proficiency.getSkillLevel());
+                        proficiencyDTO.setSkillName(proficiency.getSkill().getName());
+                        proficiencyDTO.setSkillId(proficiency.getSkill().getId());
+                        return proficiencyDTO;
+                    }).collect(java.util.stream.Collectors.toList()) : new ArrayList<>();
 
             roleDTO.setProficiencies(proficiencies);
             return roleDTO;
         }).collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteRoleById(Long roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        proficiencyRepository.deleteByRoleId(roleId);
+
+        roleRepository.delete(role);
     }
 
 
@@ -77,7 +90,7 @@ public class RoleServiceImpl implements RoleService {
             Proficiency proficiency = new Proficiency();
             proficiency.setSkill(skill);
             proficiency.setRole(savedRole);
-            proficiency.setSkillLevel(SkillLevel.BEGINNER);
+            proficiency.setSkillLevel(roleDTO.getProficiencies().get(0).getSkillLevel());
             proficiencyRepository.save(proficiency);
             proficiencies.add(proficiency);
         }
