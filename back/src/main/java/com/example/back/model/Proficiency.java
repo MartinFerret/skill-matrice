@@ -25,6 +25,7 @@ public class Proficiency {
 
     @ManyToOne
     @JoinColumn(name = "skill_id", nullable = true)
+    @JsonBackReference
     private Skill skill;
 
     @ManyToOne
@@ -34,5 +35,6 @@ public class Proficiency {
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = true)
+    @JsonBackReference
     private Role role;
 }
