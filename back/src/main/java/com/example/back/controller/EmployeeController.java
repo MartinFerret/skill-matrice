@@ -1,7 +1,6 @@
 package com.example.back.controller;
 
 import com.example.back.dto.EmployeeDTO;
-import com.example.back.model.Employee;
 import com.example.back.service.employee.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,15 +19,30 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
-        System.out.println("Received Employee DTO: " + employeeDTO);
-
-        EmployeeDTO createdEmployee = employeeService.createEmployee(employeeDTO);
-        return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
+    public ResponseEntity<List<EmployeeDTO>> createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        employeeService.createEmployee(employeeDTO);
+        return new ResponseEntity<>(employeeService.getAllEmployees(), HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
         return new ResponseEntity<>(employeeService.getAllEmployees(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<List<EmployeeDTO>> deleteEmployee (@PathVariable("id") Long id ) {
+        employeeService.deleteEmployee(id);
+        return new ResponseEntity<>(employeeService.getAllEmployees(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(employeeService.getEmployeeById(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable("id") Long id, @Valid @RequestBody EmployeeDTO employeeDTO) {
+        EmployeeDTO employeeSaved = employeeService.updateEmployee(id, employeeDTO);
+        return new ResponseEntity<>(employeeSaved, HttpStatus.OK);
     }
 }
