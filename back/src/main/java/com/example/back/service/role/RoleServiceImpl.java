@@ -88,18 +88,17 @@ public class RoleServiceImpl implements RoleService {
                 .map(proficiencyDTO -> proficiencyDTO.getSkill().getId())
                 .collect(Collectors.toList());
 
-        if (skillIds.isEmpty()) {
-            throw new RuntimeException("Aucune compétence n'a été fournie pour ce rôle");
-        }
-
-        for (Long skillId : skillIds) {
+        for (int i = 0; i < skillIds.size(); i++) {
+            Long skillId = skillIds.get(i);
             Skill skill = skillRepository.findById(skillId)
                     .orElseThrow(() -> new RuntimeException("Compétence non trouvée avec l'ID : " + skillId));
 
             Proficiency proficiency = new Proficiency();
             proficiency.setSkill(skill);
             proficiency.setRole(savedRole);
-            proficiency.setSkillLevel(roleDTO.getProficiencies().get(0).getSkillLevel());
+
+            proficiency.setSkillLevel(roleDTO.getProficiencies().get(i).getSkillLevel());
+
             proficiencyRepository.save(proficiency);
             proficiencies.add(proficiency);
         }
@@ -108,12 +107,15 @@ public class RoleServiceImpl implements RoleService {
                 .map(proficiency -> {
                     ProficiencyDTO proficiencyDTO = new ProficiencyDTO();
                     proficiencyDTO.setId(proficiency.getId());
+
                     SkillDTO skillDTO = new SkillDTO();
                     skillDTO.setId(proficiency.getSkill().getId());
                     skillDTO.setName(proficiency.getSkill().getName());
                     skillDTO.setParentSkillId(proficiency.getSkill().getParentSkill() != null ? proficiency.getSkill().getParentSkill().getId() : null);
+
                     proficiencyDTO.setSkill(skillDTO);
                     proficiencyDTO.setSkillLevel(proficiency.getSkillLevel());
+
                     return proficiencyDTO;
                 })
                 .collect(Collectors.toList());
