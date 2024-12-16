@@ -14,5 +14,5 @@ public class EmployeeDTO {
     private String firstname;
     private String lastname;
     private String role;
-    private List<ProficiencyEmployeeDTO> proficiencies;
+    private List<ProficiencyDTO> proficiencies;
 }
