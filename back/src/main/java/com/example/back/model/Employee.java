@@ -32,8 +32,7 @@ public class Employee {
     @Column(name = "lastname")
     private String lastname;
 
-    @NotBlank
-    @Column(name = "role")
+    @Column(name = "role", nullable = true)
     private String role;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)

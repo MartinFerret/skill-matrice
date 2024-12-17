@@ -34,7 +34,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
-        if (employeeDTO.getProficiencies() == null || employeeDTO.getProficiencies().isEmpty()) {
+        if (employeeDTO.getProficiencies() == null) {
             throw new IllegalArgumentException("An employee must have at least one proficiency.");
         }
 
@@ -42,9 +42,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setFirstname(employeeDTO.getFirstname());
         employee.setLastname(employeeDTO.getLastname());
 
-        if (employeeDTO.getRole() == null || employeeDTO.getRole().trim().isEmpty()) {
-            throw new IllegalArgumentException("Role must not be blank.");
-        }
         employee.setRole(employeeDTO.getRole());
 
         List<Proficiency> proficiencies = new ArrayList<>();

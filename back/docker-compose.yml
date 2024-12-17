@@ -12,6 +12,14 @@ services:
     networks:
       - dev
 
+  zipkin:
+    image: ghcr.io/openzipkin/zipkin-slim:${TAG:-latest}
+    container_name: zipkin
+    environment:
+      - STORAGE_TYPE=mem
+      - MYSQL_HOST=mysql
+    ports:
+      - "9411:9411"
 networks:
   dev:
 
